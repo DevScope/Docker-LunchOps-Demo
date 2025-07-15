@@ -1,7 +1,56 @@
-## Compose sample application
-### React application with a NodeJS backend and a MySQL database
+# React application with a NodeJS backend and a MySQL database
 
-Project structure:
+## 1. Build docker image backend
+First we will build our docker image that will be our NodeJS backend.
+
+```
+docker build -f .\backend\Dockerfile -t nodejs-backend --target=development .\backend\
+```
+
+## 2. Build docker image frontend
+Now we will build our docker image that will be our React frontend.
+
+```
+docker build -f .\frontend\Dockerfile -t react-frontend --target=development .\frontend\
+```
+
+## 3. Let's run our containers!
+*Note: We dont need to build the DB container because we will use a public MariaDB docker image*
+
+We will now execute this command to start our containers we builded earlier.
+
+```
+docker-compose -f .\compose-local.yaml up -d
+```
+
+Listing containers must show containers running and the port mapping as below:
+```
+$ docker ps
+CONTAINER ID   IMAGE                   COMMAND                  CREATED         STATUS                            PORTS                                                                                              NAMES
+a9b23f2d4bc8   react-frontend:latest   "docker-entrypoint.s…"   8 seconds ago   Up 2 seconds                      0.0.0.0:3000->3000/tcp, :::3000->3000/tcp                                                          react-frontend      
+587bbf4880ae   nodejs-backend:latest   "docker-entrypoint.s…"   8 seconds ago   Up 3 seconds (health: starting)   0.0.0.0:80->80/tcp, :::80->80/tcp, 0.0.0.0:9229-9230->9229-9230/tcp, :::9229-9230->9229-9230/tcp   nodejs-backend      
+f5c5a88ec2c6   mariadb:10.6.4-focal    "docker-entrypoint.s…"   8 seconds ago   Up 4 seconds                      3306/tcp                                                                                           maria-db
+```
+
+After the application starts, navigate to `http://localhost:3000` in your web browser.
+
+![page](./output.png)
+
+
+The backend service container has the port 80 mapped to 80 on the host.
+```
+$ curl localhost:80
+{"message":"Hello from MySQL 8.0.19"}
+```
+
+To stop the containers and remove them we just have to execute this command.
+
+```
+docker-compose -f .\compose-local.yaml down
+```
+
+## Project structure
+
 ```
 .
 ├── backend
@@ -16,7 +65,7 @@ Project structure:
 └── README.md
 ```
 
-[_compose.yaml_](compose.yaml)
+[_compose-local.yaml_](compose-local.yaml)
 ```
 services:
   backend:
@@ -46,54 +95,3 @@ Make sure port 3000 on the host is not already being in use.
 > For compatibility purpose between `AMD64` and `ARM64` architecture, we use a MariaDB as database instead of MySQL.  
 > You still can use the MySQL image by uncommenting the following line in the Compose file   
 > `#image: mysql:8.0.27`
-
-## Deploy with docker compose
-
-```
-$ docker compose up -d
-Creating network "react-express-mysql_default" with the default driver
-Building backend
-Step 1/16 : FROM node:10
- ---> aa6432763c11
-...
-Successfully tagged react-express-mysql_frontend:latest
-WARNING: Image for service frontend was built because it did not already exist. To rebuild this image you must use `docker-compose build` or `docker-compose up --build`.
-Creating react-express-mysql_db_1 ... done
-Creating react-express-mysql_backend_1 ... done
-Creating react-express-mysql_frontend_1 ... done
-```
-
-## Expected result
-
-Listing containers must show containers running and the port mapping as below:
-```
-$ docker ps
-CONTAINER ID        IMAGE                          COMMAND                  CREATED             STATUS                   PORTS                                                  NAMES
-f3e1183e709e        react-express-mysql_frontend   "docker-entrypoint.s…"   8 minutes ago       Up 8 minutes             0.0.0.0:3000->3000/tcp                                 react-express-mysql_frontend_1
-9422da53da76        react-express-mysql_backend    "docker-entrypoint.s…"   8 minutes ago       Up 8 minutes (healthy)   0.0.0.0:80->80/tcp, 0.0.0.0:9229-9230->9229-9230/tcp   react-express-mysql_backend_1
-a434bce6d2be        mysql:8.0.19                   "docker-entrypoint.s…"   8 minutes ago       Up 8 minutes             3306/tcp, 33060/tcp                                    react-express-mysql_db_1
-```
-
-After the application starts, navigate to `http://localhost:3000` in your web browser.
-
-![page](./output.png)
-
-
-The backend service container has the port 80 mapped to 80 on the host.
-```
-$ curl localhost:80
-{"message":"Hello from MySQL 8.0.19"}
-```
-
-Stop and remove the containers
-```
-$ docker compose down
-Stopping react-express-mysql_frontend_1 ... done
-Stopping react-express-mysql_backend_1  ... done
-Stopping react-express-mysql_db_1       ... done
-Removing react-express-mysql_frontend_1 ... done
-Removing react-express-mysql_backend_1  ... done
-Removing react-express-mysql_db_1       ... done
-Removing network react-express-mysql_default
-
-```
