@@ -29,7 +29,7 @@ docker build -f .\frontend\Dockerfile -t react-frontend --target=development .\f
 
 We will now execute this command to start our containers we builded earlier.
 
-[_compose-local.yaml_](.\compose-local.yaml)
+[_compose-local.yaml_](compose-local.yaml)
 
 ```
 docker-compose -f .\compose-local.yaml up -d
@@ -106,7 +106,7 @@ We won't need t push the MariaDB docker image because it is public.
 
 With the following commands we create an environment for our ACA.
 
-[_compose-aca.yaml_](.\compose-aca.yaml)
+[_compose-aca.yaml_](compose-aca.yaml)
 
 ```
 az containerapp env create --name DockerLunchOpsEnv --resource-group DockerLunchOpsDemo --location westeurope
