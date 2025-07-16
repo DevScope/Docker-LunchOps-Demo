@@ -1,10 +1,7 @@
 services:
   backend:
-    build:
-      args:
-      - NODE_ENV=development
-      context: backend
-      target: development
+    container_name: nodejs-backend
+    image: dockerlunchopsacr.azurecr.io/nodejs-backend:latest
     command: npm run start-watch
     environment:
       - DATABASE_DB=example
@@ -29,6 +26,7 @@ services:
     depends_on:
       - db
   db:
+    container_name: maria-db
     # We use a mariadb image which supports both amd64 & arm64 architecture
     image: mariadb:10.6.4-focal
     # If you really want to use MySQL, uncomment the following line
@@ -45,9 +43,8 @@ services:
       - MYSQL_DATABASE=example
       - MYSQL_ROOT_PASSWORD_FILE=/run/secrets/db-password
   frontend:
-    build:
-      context: frontend
-      target: development
+    container_name: react-frontend
+    image: dockerlunchopsacr.azurecr.io/react-frontend:latest
     ports:
       - 3000:3000
     volumes:
