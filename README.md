@@ -80,7 +80,7 @@ Create your resource group and ACR to where you will push your docker images.
 
 ```
 az group create --location westeurope --name DockerLunchOpsDemo
-az acr create --name dockerlunchopsacr --resource-group DockerLunchOpsDemo --sku Basic
+az acr create --name dockerlunchopsacr --resource-group DockerLunchOpsDemo --sku Basic --admin-enabled true
 ```
 
 Now to be able to push it to our ACR we need to tag our images with the ACR login server. When you create the ACR it outputs a JSON with all the info and there you can check the login server (also you can view it via Azure Portal).
@@ -92,7 +92,7 @@ docker tag nodejs-backend:latest dockerlunchopsacr.azurecr.io/nodejs-backend:lat
 docker tag react-frontend:latest dockerlunchopsacr.azurecr.io/react-frontend:latest
 ```
 
-Time push them to the ACR (beware you have to login to the ACR).
+Time to push them to the ACR (beware you have to login to the ACR).
 
 ```
 az acr login -n dockerlunchopsacr
@@ -104,8 +104,22 @@ We won't need t push the MariaDB docker image because it is public.
 
 ## 2. Use the compose to deploy to ACA
 
+With the following commands we create an environment for our ACA.
+
 [_compose-aca.yaml_](.\compose-aca.yaml)
 
 ```
-az containerapp compose create --resource-group DockerLunchOpsDemo --environment DockerLunchOpsEnv --compose-file-path .\compose-aca.yaml
+az containerapp env create --name DockerLunchOpsEnv --resource-group DockerLunchOpsDemo --location westeurope
+```
+
+We need to get the ACR credentials for the ACA to be able to authenticate to our private registry (unfortunately *az containerapp compose* does not support *managed identity* yet).
+
+```
+az acr credential show --name dockerlunchopsacr
+```
+
+After creating the environment and having the credentials now we can deploy using our compose.
+
+```
+az containerapp compose create --resource-group DockerLunchOpsDemo --environment DockerLunchOpsEnv --registry-server dockerlunchopsacr.azurecr.io --registry-username <username> --registry-password <password> --compose-file-path .\compose-aca.yaml
 ```
