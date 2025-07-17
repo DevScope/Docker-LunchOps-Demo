@@ -1,13 +1,12 @@
 services:
   backend:
     container_name: nodejs-backend
-    image: dockerlunchopsacr.azurecr.io/nodejs-backend:latest
-    command: npm run start-watch
+    image: dockerlunchopsacr.azurecr.io/nodejs-backend:production
     environment:
       - DATABASE_DB=example
       - DATABASE_USER=root
-      - DATABASE_PASSWORD=/run/secrets/db-password
-      - DATABASE_HOST=db
+      - DATABASE_PASSWORD=secretref:db-password
+      - DATABASE_HOST=https://db.mangobay-c7b95c8c.westeurope.azurecontainerapps.io
       - NODE_ENV=production
     ports:
       - 80:80
@@ -19,20 +18,22 @@ services:
       - db
   db:
     container_name: maria-db
+    # We use a mariadb image which supports both amd64 & arm64 architecture
     image: mariadb:10.6.4-focal
-    command: '--default-authentication-plugin=mysql_native_password'
+    # If you really want to use MySQL, uncomment the following line
+    #image: mysql:8.0.27
+    args: '--default-authentication-plugin=mysql_native_password'
+    restart: always
     secrets:
       - db-password
-    volumes:
-      - db-data:/var/lib/mysql
     environment:
       - MYSQL_DATABASE=example
-      - MYSQL_ROOT_PASSWORD_FILE=/run/secrets/db-password
+      - MYSQL_ROOT_PASSWORD=secretref:db-password
   frontend:
     container_name: react-frontend
-    image: dockerlunchopsacr.azurecr.io/react-frontend:latest
+    image: dockerlunchopsacr.azurecr.io/react-frontend:production
     ports:
-      - 3000:3000
+      - 3000:80
     depends_on:
       - backend
 volumes:

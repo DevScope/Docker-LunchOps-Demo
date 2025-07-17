@@ -133,6 +133,4 @@ After creating the environment and having the credentials now we can deploy usin
 
 ```
 az containerapp compose create --resource-group DockerLunchOpsDemo --environment DockerLunchOpsEnv --registry-server dockerlunchopsacr.azurecr.io --registry-username <username> --registry-password <password> --compose-file-path .\compose-aca.yaml
-
-az containerapp volume create --name dbdata --resource-group DockerLunchOpsDemo --container-app maria-db --storage-type AzureFile --storage-account-name stdockerlunchops --share-name db-data --access-key "$STORAGE_KEY"
 ```
