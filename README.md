@@ -21,7 +21,7 @@ Now we will build our docker image that will be our **React frontend**.
 [_Dockerfile_](.\frontend\Dockerfile)
 
 ```
-docker build -f .\frontend\Dockerfile -t react-frontend .\frontend\ --build-arg BACKEND_URL=http://nodejs-backend:80
+docker build -f .\frontend\Dockerfile -t react-frontend .\frontend\
 ```
 
 ## 3. Let's run our containers!
@@ -88,16 +88,16 @@ Now to be able to push it to our ACR we need to tag our images with the ACR logi
 In my case the login server is `dockerlunchopsacr.azurecr.io`.
 
 ```
-docker tag nodejs-backend:latest dockerlunchopsacr.azurecr.io/nodejs-backend:latest
-docker tag react-frontend:latest dockerlunchopsacr.azurecr.io/react-frontend:latest
+docker tag nodejs-backend:production dockerlunchopsacr.azurecr.io/nodejs-backend:production
+docker tag react-frontend:production dockerlunchopsacr.azurecr.io/react-frontend:production
 ```
 
 Time to push them to the ACR (beware you have to login to the ACR).
 
 ```
 az acr login -n dockerlunchopsacr
-docker push dockerlunchopsacr.azurecr.io/nodejs-backend:latest
-docker push dockerlunchopsacr.azurecr.io/react-frontend:latest
+docker push dockerlunchopsacr.azurecr.io/nodejs-backend:production
+docker push dockerlunchopsacr.azurecr.io/react-frontend:production
 ```
 
 We won't need t push the MariaDB docker image because it is public.
