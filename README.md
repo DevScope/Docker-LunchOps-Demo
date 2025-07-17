@@ -12,7 +12,7 @@ First we will build our docker image that will be our **NodeJS backend**.
 [_Dockerfile_](.\backend\Dockerfile)
 
 ```
-docker build -f .\backend\Dockerfile -t nodejs-backend --target=development .\backend\
+docker build -f .\backend\Dockerfile -t nodejs-backend .\backend\
 ```
 
 ## 2. Build docker image frontend
@@ -21,7 +21,7 @@ Now we will build our docker image that will be our **React frontend**.
 [_Dockerfile_](.\frontend\Dockerfile)
 
 ```
-docker build -f .\frontend\Dockerfile -t react-frontend --target=development .\frontend\
+docker build -f .\frontend\Dockerfile -t react-frontend .\frontend\ --build-arg BACKEND_URL=http://nodejs-backend:80
 ```
 
 ## 3. Let's run our containers!
@@ -104,9 +104,20 @@ We won't need t push the MariaDB docker image because it is public.
 
 ## 2. Use the compose to deploy to ACA
 
-With the following commands we create an environment for our ACA.
-
 [_compose-aca.yaml_](compose-aca.yaml)
+
+
+Create storage account for container volumes.
+
+```
+az storage account create --name stdockerlunchops --resource-group DockerLunchOpsDemo --location westeurope --sku Standard_LRS
+
+$STORAGE_KEY=$(az storage account keys list --resource-group DockerLunchOpsDemo --account-name stdockerlunchops --query "[0].value" --output tsv)
+
+az storage share-rm create --resource-group DockerLunchOpsDemo --storage-account stdockerlunchops --name db-data
+```
+
+With the following commands we create an environment for our ACA (be sure you link your azure file share in the ACA environment via Azure Portal).
 
 ```
 az containerapp env create --name DockerLunchOpsEnv --resource-group DockerLunchOpsDemo --location westeurope
@@ -122,4 +133,6 @@ After creating the environment and having the credentials now we can deploy usin
 
 ```
 az containerapp compose create --resource-group DockerLunchOpsDemo --environment DockerLunchOpsEnv --registry-server dockerlunchopsacr.azurecr.io --registry-username <username> --registry-password <password> --compose-file-path .\compose-aca.yaml
+
+az containerapp volume create --name dbdata --resource-group DockerLunchOpsDemo --container-app maria-db --storage-type AzureFile --storage-account-name stdockerlunchops --share-name db-data --access-key "$STORAGE_KEY"
 ```

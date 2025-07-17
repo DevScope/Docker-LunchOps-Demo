@@ -1,6 +1,13 @@
 const app = require("./server");
 const { port } = require("./config");
 
+var cors = require("cors");
+app.use(cors(
+  {
+    origin: "*", // Allow all origins, adjust as necessary for security
+  }
+));
+
 const server = app.listen(port, function() {
   console.log("Webserver is ready");
 });

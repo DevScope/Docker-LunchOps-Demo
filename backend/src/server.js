@@ -19,14 +19,18 @@ const app = express();
 
 app.use(morgan("common"));
 
-app.get("/", function(req, res, next) {
+app.get("/", function (req, res, next) {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');      // Handle preflight OPTIONS requestsif (req.method === 'OPTIONS') {     return res.status(200).end();   }
+
   database.raw('select VERSION() version')
     .then(([rows, columns]) => rows[0])
     .then((row) => res.json({ message: `Hello from MySQL ${row.version}` }))
     .catch(next);
 });
 
-app.get("/healthz", function(req, res) {
+app.get("/healthz", function (req, res) {
   // do app logic here to determine if app is truly healthy
   // you should return 200 if healthy, and anything else will fail
   // if you want, you should be able to restrict this to localhost (include ipv4 and ipv6)

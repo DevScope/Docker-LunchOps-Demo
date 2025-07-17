@@ -2,10 +2,12 @@ import React, { useEffect, useState } from "react";
 import logo from "./logo.svg";
 import "./App.css";
 
+const REACT_APP_BACKEND_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:80";
+
 function App() {
   const [message, setMessage] = useState();
   useEffect(() => {
-    fetch("/api/")
+    fetch(REACT_APP_BACKEND_URL)
       .then(res => res.json())
       .then(res => setMessage(res.message))
       .catch(console.error);

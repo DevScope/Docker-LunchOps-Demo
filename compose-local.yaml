@@ -2,13 +2,13 @@ services:
   backend:
     container_name: nodejs-backend
     image: nodejs-backend:latest
-    command: npm run start-watch
+    command: npm run start
     environment:
       - DATABASE_DB=example
       - DATABASE_USER=root
       - DATABASE_PASSWORD=/run/secrets/db-password
       - DATABASE_HOST=db
-      - NODE_ENV=development
+      - NODE_ENV=production
     ports:
       - 80:80
       - 9229:9229
@@ -46,7 +46,7 @@ services:
     container_name: react-frontend
     image: react-frontend:latest
     ports:
-      - 3000:3000
+      - 3000:80
     volumes:
       - ./frontend/src:/code/src
       - /code/node_modules
