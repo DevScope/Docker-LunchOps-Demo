@@ -6,7 +6,7 @@ services:
       - DATABASE_DB=example
       - DATABASE_USER=root
       - DATABASE_PASSWORD=secretref:db-password
-      - DATABASE_HOST=https://db.mangobay-c7b95c8c.westeurope.azurecontainerapps.io
+      - DATABASE_HOST=db.internal.mangobay-c7b95c8c.westeurope.azurecontainerapps.io:3306
       - NODE_ENV=production
     ports:
       - 80:80
@@ -21,7 +21,7 @@ services:
     # We use a mariadb image which supports both amd64 & arm64 architecture
     image: mariadb:10.6.4-focal
     ports:
-      - 3306:3306
+      - 3306:3306/tcp
     # If you really want to use MySQL, uncomment the following line
     #image: mysql:8.0.27
     args: '--default-authentication-plugin=mysql_native_password'
