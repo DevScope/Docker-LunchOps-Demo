@@ -4,7 +4,7 @@
 
 - [WSL](https://learn.microsoft.com/en-us/windows/wsl/install)
 - [Docker Desktop](https://docs.docker.com/desktop/setup/install/windows-install/)
-- [Azure CLI](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli-windows?view=azure-cli-latest&pivots=msi-powershell)
+- [Azure CLI](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli-windows?view=azure-cli-latest&pivots=msi)
 
 ## 1. Build docker image backend
 First we will build our docker image that will be our **NodeJS backend**.
