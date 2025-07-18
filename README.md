@@ -106,17 +106,6 @@ We won't need t push the MariaDB docker image because it is public.
 
 [_compose-aca.yaml_](compose-aca.yaml)
 
-
-Create storage account for container volumes.
-
-```
-az storage account create --name stdockerlunchops --resource-group DockerLunchOpsDemo --location westeurope --sku Standard_LRS
-
-$STORAGE_KEY=$(az storage account keys list --resource-group DockerLunchOpsDemo --account-name stdockerlunchops --query "[0].value" --output tsv)
-
-az storage share-rm create --resource-group DockerLunchOpsDemo --storage-account stdockerlunchops --name db-data
-```
-
 With the following commands we create an environment for our ACA (be sure you link your azure file share in the ACA environment via Azure Portal).
 
 ```
