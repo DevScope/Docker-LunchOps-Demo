@@ -15,9 +15,6 @@ CMD [ "npm", "start" ]
 
 FROM development AS builder
 
-ARG BACKEND_URL=http://localhost:80
-ENV REACT_APP_BACKEND_URL=${BACKEND_URL}
-
 RUN npm run build
 
 FROM development as dev-envs
@@ -32,5 +29,8 @@ COPY --from=gloursdocker/docker / /
 CMD [ "npm", "start" ]
 
 FROM nginx:1.29-alpine
+
+ARG BACKEND_URL=http://localhost:80
+ENV REACT_APP_BACKEND_URL=${BACKEND_URL}
 
 COPY --from=builder /code/build /usr/share/nginx/html

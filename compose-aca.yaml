@@ -1,12 +1,13 @@
 services:
   backend:
     container_name: nodejs-backend
-    image: dockerlunchopsacr.azurecr.io/nodejs-backend:production
+    image: dockerlunchopsacr.azurecr.io/nodejs-backend:latest
     environment:
       - DATABASE_DB=example
       - DATABASE_USER=root
       - DATABASE_PASSWORD=secretref:db-password
-      - DATABASE_HOST=db.internal.mangobay-c7b95c8c.westeurope.azurecontainerapps.io:3306
+      - DATABASE_HOST=db
+      - DATABASE_PORT=3306
       - NODE_ENV=production
     ports:
       - 80:80
@@ -33,9 +34,11 @@ services:
       - MYSQL_ROOT_PASSWORD=secretref:db-password
   frontend:
     container_name: react-frontend
-    image: dockerlunchopsacr.azurecr.io/react-frontend:production
+    image: dockerlunchopsacr.azurecr.io/react-frontend:latest
     ports:
       - 3000:80
+    environment:
+      - REACT_APP_BACKEND_URL=https://backend.mangobay-c7b95c8c.westeurope.azurecontainerapps.io/
     depends_on:
       - backend
 volumes:

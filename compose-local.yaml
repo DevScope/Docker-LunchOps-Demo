@@ -2,7 +2,7 @@ services:
   backend:
     container_name: nodejs-backend
     image: nodejs-backend:latest
-    command: npm run start-watch
+    command: npm run start
     environment:
       - DATABASE_DB=example
       - DATABASE_USER=root

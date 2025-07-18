@@ -69,7 +69,7 @@ Now we will use **Azure CLI** to create and deploy to an **Azure Container App (
 
 First we must push our docker images to an **Azure Container Registry (ACR)**, because it needs to be there for the ACA to be able to pull those docker images.
 
-You need to login to your azure account and set the subscription you wil be using.
+You need to login to your azure account and set the subscription you wil be using (in newer versions of Azure CLI it prompts you to choose the subscription already).
 
 ```
 az login
@@ -88,16 +88,16 @@ Now to be able to push it to our ACR we need to tag our images with the ACR logi
 In my case the login server is `dockerlunchopsacr.azurecr.io`.
 
 ```
-docker tag nodejs-backend:production dockerlunchopsacr.azurecr.io/nodejs-backend:production
-docker tag react-frontend:production dockerlunchopsacr.azurecr.io/react-frontend:production
+docker tag nodejs-backend:latest dockerlunchopsacr.azurecr.io/nodejs-backend:latest
+docker tag react-frontend:latest dockerlunchopsacr.azurecr.io/react-frontend:latest
 ```
 
 Time to push them to the ACR (beware you have to login to the ACR).
 
 ```
 az acr login -n dockerlunchopsacr
-docker push dockerlunchopsacr.azurecr.io/nodejs-backend:production
-docker push dockerlunchopsacr.azurecr.io/react-frontend:production
+docker push dockerlunchopsacr.azurecr.io/nodejs-backend:latest
+docker push dockerlunchopsacr.azurecr.io/react-frontend:latest
 ```
 
 We won't need t push the MariaDB docker image because it is public.
@@ -106,7 +106,7 @@ We won't need t push the MariaDB docker image because it is public.
 
 [_compose-aca.yaml_](compose-aca.yaml)
 
-With the following commands we create an environment for our ACA (be sure you link your azure file share in the ACA environment via Azure Portal).
+With the following commands we create an environment for our ACA.
 
 ```
 az containerapp env create --name DockerLunchOpsEnv --resource-group DockerLunchOpsDemo --location westeurope
@@ -122,4 +122,10 @@ After creating the environment and having the credentials now we can deploy usin
 
 ```
 az containerapp compose create --resource-group DockerLunchOpsDemo --environment DockerLunchOpsEnv --registry-server dockerlunchopsacr.azurecr.io --registry-username <username> --registry-password <password> --compose-file-path .\compose-aca.yaml
+```
+
+Enable the ingress for the MariaDB container for backend container to be able to connect to the db.
+
+```
+az containerapp ingress enable --name db --resource-group DockerLunchOpsDemo --type internal --target-port 3306 --exposed-port 3306 --transport tcp
 ```
