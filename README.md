@@ -129,3 +129,9 @@ Enable the ingress for the MariaDB container for backend container to be able to
 ```
 az containerapp ingress enable --name db --resource-group DockerLunchOpsDemo --type internal --target-port 3306 --exposed-port 3306 --transport tcp
 ```
+
+When you open your resources in Azure Portal you will be able to see the Public URL in the "Overview" tab of the container app :D
+
+![page](./images/output-aca-backend.png)
+
+![page](./images/output-aca-frontend.png)
